@@ -41,7 +41,10 @@ You can get the parameters of KRUSTY and thermal properties of fuel from the fol
 
 # Reference:
 [1] D. E. Burkes, C. A. Papesch, A. P. Maddison, T. Hartmann, and F. J. Rice. Thermo-physical properties of DU-10 wt. Journal of Nuclear Materials, 403:160 – 166, 2010
+
 [2] Leonardo de Holanda Mencarini, Jeffrey C. King. Fuel geometry options for a moderated low-enriched uranium kilowatt-class space nuclear reactor. Nuclear Engineering and Design, 340:122 - 132, 2018
-[3] D. I. POSTON, et. al. Design of the KRUSTY Reactor. Proceedings NETS-2018, ANS (2018). 
-[4] M. S. EL-GENK and J. P. TOURNIER. Uses  ofLiquid-Metal and Water Heat Pipes in Space ReactorPower Systems. Front. Heat Pipes,2, 013002 (2011);
+
+[3] D. I. POSTON, et. al. Design of the KRUSTY Reactor. Proceedings NETS-2018, ANS (2018)
+
+[4] M. S. EL-GENK and J. P. TOURNIER. Uses  ofLiquid-Metal and Water Heat Pipes in Space ReactorPower Systems. Front. Heat Pipes,2, 013002 (2011)
 
