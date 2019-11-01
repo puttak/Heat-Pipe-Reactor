@@ -6,14 +6,16 @@
 This is simulation code for heat pipe reactor (KRUSTY 1/8 model).
 
 Completed:
-(a)Neutronics calculation
-(b)Temperature calculation in solid area
+
+    (a)Neutronics calculation 
+    (b)Temperature calculation in solid area
 
 To do:
-(a)Fluid calculation in heat pipe
-(b)Thermal expansion calculation
-(c)Burn-up calculation
-(d)3D-modeling
+
+    (a)Fluid calculation in heat pipe
+    (b)Thermal expansion calculation
+    (c)Burn-up calculation
+    (d)3D-modeling
 
 
 1.Unit: length(cm),temperature(K), others are SI units
