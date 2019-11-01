@@ -1,7 +1,6 @@
 # Heat-Pipe-Reactor
 # Instructions (version 0.0.1)
-# Before use: Make sure that there is no .vtu or .fld existing in folder !!!!!
-# This might cause some unexpected bugs!!!!!
+# Before use: Make sure that there is no .vtu or .fld existing in folder !!!!! This might cause some unexpected bugs!!!!!
 
 This is simulation code for heat pipe reactor (KRUSTY 1/8 model).
 
