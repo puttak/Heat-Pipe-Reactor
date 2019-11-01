@@ -46,5 +46,5 @@ You can get the parameters of KRUSTY and thermal properties of fuel from the fol
 
 [3] D. I. POSTON, et. al. Design of the KRUSTY Reactor. Proceedings NETS-2018, ANS (2018)
 
-[4] M. S. EL-GENK and J. P. TOURNIER. Uses  ofLiquid-Metal and Water Heat Pipes in Space ReactorPower Systems. Front. Heat Pipes,2, 013002 (2011)
+[4] M. S. EL-GENK and J. P. TOURNIER. Uses  of Liquid-Metal and Water Heat Pipes in Space Reactor Power Systems. Front. Heat Pipes,2, 013002 (2011)
 
