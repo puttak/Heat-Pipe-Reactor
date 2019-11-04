@@ -37,7 +37,7 @@ To do:
     
     (b)postProcess: It can post-process results of temperature and generate temperature function in fuel area and coefficients of this function.
     
-    (c)readNodesFromVtu: Read positions(x,y,z) from HeatPipeReactor_nodes.vtu.
+    (c)readNodesFromVtu: Read positions(x,y,z) of nodes from HeatPipeReactor_nodes.vtu.
 
 4.HeatPipeReactor_nodes.vtu is only used to store the information of nodes. HeatPipeReactor.xml is the setting for Nektar++.
 
