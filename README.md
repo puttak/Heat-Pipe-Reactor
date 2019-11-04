@@ -46,11 +46,17 @@ For more details, please check codes respectively.
 You can get the parameters of KRUSTY and thermal properties of fuel from the following reference papers. 
 
 # Reference:
-[1] D. E. Burkes, C. A. Papesch, A. P. Maddison, T. Hartmann, and F. J. Rice. Thermo-physical properties of DU-10 wt. Journal of Nuclear Materials, 403:160 – 166, 2010
+[1] D. E. Burkes, C. A. Papesch, A. P. Maddison, T. Hartmann, and F. J. Rice. Thermo-physical properties of DU-10 wt. Journal of Nuclear Materials, 403:160 – 166, 2010.
 
-[2] Leonardo de Holanda Mencarini, Jeffrey C. King. Fuel geometry options for a moderated low-enriched uranium kilowatt-class space nuclear reactor. Nuclear Engineering and Design, 340:122 - 132, 2018
+[2] Leonardo de Holanda Mencarini, Jeffrey C. King. Fuel geometry options for a moderated low-enriched uranium kilowatt-class space nuclear reactor. Nuclear Engineering and Design, 340:122 - 132, 2018.
 
-[3] D. I. POSTON, et. al. Design of the KRUSTY Reactor. Proceedings NETS-2018, ANS (2018)
+[3] D. I. POSTON, et. al. Design of the KRUSTY Reactor. Proceedings NETS-2018, ANS (2018).
 
-[4] M. S. EL-GENK and J. P. TOURNIER. Uses  of Liquid-Metal and Water Heat Pipes in Space Reactor Power Systems. Front. Heat Pipes,2, 013002 (2011)
+[4] M. S. EL-GENK and J. P. TOURNIER. Uses  of Liquid-Metal and Water Heat Pipes in Space Reactor Power Systems. Front. Heat Pipes,2, 013002 (2011).
+
+[5] Paul K. Romano, Nicholas E. Horelik, Bryan R. Herman, Adam G. Nelson, Benoit Forget, and Kord Smith, “OpenMC: A State-of-the-Art Monte Carlo Code for Research and Development,” Ann. Nucl. Energy, 82, 90–97 (2015).
+
+[6] Paul K. Romano and Benoit Forget, “The OpenMC Monte Carlo Particle Transport Code,” Ann. Nucl. Energy, 51, 274–281 (2013).
+
+[7] C.Cantwell, D.Moxey, A.Comerford, A.Bolis, G.Rocco, G.Mengaldo, D.DeGrazia, S.Yakovlev, J.E.Lombard, D.Ekelschot, B.Jordi, H.Xu, Y.Mohamied, C.Eskilsson, B.Nelson,P.Vos, C.Biotto, R.Kirby, S.Sherwin, Nektar++:an open source spectral/hp element framework, Comput.Phys.Commun, 192, 205–219 (2015).
 
