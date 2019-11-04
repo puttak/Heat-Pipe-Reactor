@@ -2,6 +2,9 @@ import numpy as np
 import openmc
 import xml.etree.ElementTree as ET
 import os
+from scipy import interpolate
+import time
+import sys
 
 def define_Geo_Mat_Set(cells_num_dic,parameters_dic,settings_dic,temp_phy_mat,controlRod_deep):
     # Fuel U-10Mo
@@ -107,14 +110,6 @@ def define_Geo_Mat_Set(cells_num_dic,parameters_dic,settings_dic,temp_phy_mat,co
 
     line_1 = openmc.Plane(a=np.tan(-ang_mesh),b=-1.0,c=0.0,d=0.0,boundary_type='reflective')
     line_2 = openmc.Plane(a=np.tan(ang_mesh),b=-1.0,c=0.0,d=0.0,boundary_type='reflective')
-
-    # Get the vector of distance
-    r_axe = np.zeros(n_r+n_r_outer)
-    r_axe[0:n_r] = (r_mesh[0:n_r]+r_mesh[1:(n_r+1)])/2
-    r_axe[n_r:(n_r+n_r_outer)]= (r_outer_mesh[0:n_r_outer]+r_outer_mesh[1:(n_r_outer+1)])/2
-
-    h_axe = np.zeros(n_h)
-    h_axe[0:n_h] = (h_mesh[0:n_h]+h_mesh[1:(n_h+1)])/2
 
     # Create volume vector and matrix
     volume_vec = np.zeros(n_r+n_r_outer)
@@ -256,9 +251,9 @@ def define_Geo_Mat_Set(cells_num_dic,parameters_dic,settings_dic,temp_phy_mat,co
     # Export to "tallies.xml"
     tallies_file.export_to_xml()
     
-    return r_axe,h_axe,volume_mat,fuel_cell_ID_list
+    return volume_mat,fuel_cell_ID_list
 
-def postProcess(nodes_dic,volume_mat,temp_nodes_vec,parameters_dic,cells_num_dic,settings_dic,fuel_cell_ID_list):
+def postProcess(nodes_dic,volume_mat,temp_nodes_vec,fuel_nodes_index,parameters_dic,cells_num_dic,settings_dic,fuel_cell_ID_list):
 
     #To be edited
 
@@ -309,21 +304,47 @@ def postProcess(nodes_dic,volume_mat,temp_nodes_vec,parameters_dic,cells_num_dic
 
     h_mesh = np.linspace(-fuel_h/2,fuel_h/2,n_h+1)
 
+    # Get the vector of distance
+    r_axe = np.zeros(n_r+n_r_outer)
+    r_axe[0:n_r] = (r_mesh[0:n_r]+r_mesh[1:(n_r+1)])/2
+    r_axe[n_r:(n_r+n_r_outer)]= (r_outer_mesh[0:n_r_outer]+r_outer_mesh[1:(n_r_outer+1)])/2
+
+    h_axe = np.zeros(n_h)
+    h_axe[0:n_h] = (h_mesh[0:n_h]+h_mesh[1:(n_h+1)])/2
+
+    #Interpolate
+
     heat_nodes_vec = np.zeros(len(x))
+
+    x_fuel = x[fuel_nodes_index]
+    y_fuel = y[fuel_nodes_index]
+    z_fuel = z[fuel_nodes_index]
+    # r_fuel = np.sqrt(x_fuel**2+y_fuel**2)
+
+    # f = interpolate.interp2d(r_axe,h_axe,heat_ave_mat, kind='linear',fill_value = 0.0)
+    # heat_fuel_nodes_vec = f(r_fuel,z_fuel).diagonal()
+    heat_fuel_nodes_vec = np.zeros(len(x_fuel))
+
 
     for i in range(row):
         for j in range(col):
-            index = np.where(((x**2+y**2)>=(r_mesh[j]**2)) & ((x**2+y**2)<(r_mesh[j+1]**2)) & (z>=h_mesh[i]) & (z<h_mesh[i+1]) & ((x-fuel_r)*(x-fuel_r)+y*y>=(heat_pipe_R**2)))
-            heat_nodes_vec[index] = heat_ave_mat[i,j]
+            index = np.where(((x_fuel**2+y_fuel**2)>=(r_mesh[j]**2)) & ((x_fuel**2+y_fuel**2)<(r_mesh[j+1]**2)) & (z_fuel>=h_mesh[i]) & (z_fuel<h_mesh[i+1]) & ((x_fuel-fuel_r)*(x_fuel-fuel_r)+y_fuel*y_fuel>=(heat_pipe_R**2)))
+            heat_fuel_nodes_vec[index] = heat_ave_mat[i,j]
+
+
 
     # Temp = 1173.5 # Temperature(approximation), unit: K
     # lamb = (0.606+0.0351*Temp)*0.01
     # Thermal conductivity. unit: W/(K.cm)
+    heat_nodes_vec[fuel_nodes_index] = heat_fuel_nodes_vec
 
     lamb = (0.606+0.0351*temp_nodes_vec)*0.01
     points_force = -heat_nodes_vec/lamb
 
+    start_time = time.time()
     editForceFile(x,y,z,points_force,'Force')
+    end_time = time.time()
+    print(str(end_time-start_time))
 
     return k_ave
 
@@ -354,13 +375,13 @@ def editForceFile(x,y,z,points_force,file_name):
     mat[:,2] = z
     mat[:,3] = points_force
 
-    str_tot = " "
-    for i in range(np.size(mat,0)):
-        list_float = mat[i,:].tolist()
-        list_str = map(str,list_float)
-        str_1 = " ".join(list_str)
-        str_tot = str_tot + '\n' +str_1
-    str_tot = str_tot + '\n'+ " "
+    np.set_printoptions(threshold=sys.maxsize)
+    
+    str_tot = str(mat)
+    str_tot = str_tot.replace('[','')
+    str_tot = str_tot.replace(']','')
+    if ',' in str_tot:
+        str_tot = str_tot.replace(',',' ')
 
     if os.path.exists(file_name +'.pts'):
         tree = ET.parse(file_name+'.pts')
@@ -375,11 +396,18 @@ def editForceFile(x,y,z,points_force,file_name):
         tree = ET.ElementTree(NEKTAR) 
         tree.write(file_name+'.pts',encoding="utf-8", xml_declaration=True)
 
-def getCellTemperature(nodes_dic,temp_nodes_vec,parameters_dic,cells_num_dic):
+def getCellTemperature(nodes_dic,temp_nodes_vec,fuel_nodes_index,parameters_dic,cells_num_dic):
     #Get position of nodes
     x = nodes_dic['x']
     y = nodes_dic['y']
     z = nodes_dic['z']
+
+
+    x_fuel = x[fuel_nodes_index]
+    y_fuel = y[fuel_nodes_index]
+    z_fuel = z[fuel_nodes_index]
+
+    temp_fuel_nodes_vec = temp_nodes_vec[fuel_nodes_index]
 
     #Get cells mesh 
     n_r = cells_num_dic['n_r']
@@ -399,18 +427,34 @@ def getCellTemperature(nodes_dic,temp_nodes_vec,parameters_dic,cells_num_dic):
 
     temp_cells_mat = np.zeros((n_h,(n_r+n_r_outer)))
 
+
+
     for i in range(n_h):
         for j in range((n_r+n_r_outer)):
-            index = np.where(((x**2+y**2)>=(r_mesh[j]**2)) & ((x**2+y**2)<(r_mesh[j+1]**2)) & (z>=h_mesh[i]) & (z<h_mesh[i+1]) & ((x-fuel_r)*(x-fuel_r)+y*y>=(heat_pipe_R**2)))
-            if len(temp_nodes_vec[index])==0:
+            index = np.where(((x_fuel**2+y_fuel**2)>=(r_mesh[j]**2)) & ((x_fuel**2+y_fuel**2)<(r_mesh[j+1]**2)) & (z_fuel>=h_mesh[i]) & (z_fuel<h_mesh[i+1]) & ((x_fuel-fuel_r)**2+y_fuel**2>=(heat_pipe_R**2)))
+            if len(temp_fuel_nodes_vec[index])==0:
                 if j>0:
                     temp_cells_mat[i,j] =  temp_cells_mat[i,j-1]
                 else:
                     temp_cells_mat[i,j] =  temp_cells_mat[i-1,j]
 
             else:
-                temp_cells_mat[i,j] = temp_nodes_vec[index].sum()/len(temp_nodes_vec[index])
+                temp_cells_mat[i,j] = temp_fuel_nodes_vec[index].sum()/len(temp_fuel_nodes_vec[index])
 
     return temp_cells_mat
 
+def getFuelNodesIndex(nodes_dic,parameters_dic):
+
+    x = nodes_dic['x']
+    y = nodes_dic['y']
+    z = nodes_dic['z']
+
+    fuel_h = parameters_dic['fuel_h']
+    controlRod_r = parameters_dic['controlRod_r']
+    fuel_r = parameters_dic['fuel_r']
+    heat_pipe_R = parameters_dic['heat_pipe_R']
+
+    fuel_nodes_index = np.where(((x**2+y**2)>=(controlRod_r**2)) & ((x**2+y**2)<=(fuel_r**2)) & (z>=-fuel_h/2) & (z<=fuel_h/2) & ((x-fuel_r)*(x-fuel_r)+y*y>=(heat_pipe_R**2)))
+    
+    return fuel_nodes_index
 
