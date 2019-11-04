@@ -1,7 +1,11 @@
 # Heat-Pipe-Reactor
-# Instructions (version 0.0.2)
+# Instructions (version 0.0.3)
 
 This is simulation code for heat pipe reactor (KRUSTY 1/8 model).
+
+HeatPipeReactor.xml and HeatPipeReactor_node.vtu are files for the mesh with about 2000 elements.
+HeatPipeReactor_3.xml is the file for the mesh with about 8000 elements. Because the size of HeatPipeReactor_3_node.vtu is too big to upload, please contact with me if you want this file for test.
+
 
 Completed:
 
