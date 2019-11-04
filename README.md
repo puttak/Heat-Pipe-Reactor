@@ -1,6 +1,5 @@
 # Heat-Pipe-Reactor
-# Instructions (version 0.0.1)
-# Before use: Make sure that there is no .vtu or .fld existing in folder !!!!! This might cause some unexpected bugs!!!!!
+# Instructions (version 0.0.2)
 
 This is simulation code for heat pipe reactor (KRUSTY 1/8 model).
 
@@ -8,13 +7,14 @@ Completed:
 
     (a)Neutronics simulation 
     (b)Temperature simulation in solid area
+    (c)3D-Modeling
 
 To do:
 
     (a)Fluid calculation in heat pipe
     (b)Thermal expansion simulation
     (c)Burn-up calculation
-    (d)3D-modeling
+
 
 
 1.Unit: length(cm),temperature(K). Others are SI units.
@@ -26,6 +26,10 @@ To do:
     (b)postProcess: This function is used to post-proccess heating source distribution and generate forcing function for Nektar++.
     
     (c)editCellTemperature: This function is used to edit temperature of cells in geometry.xml.
+    
+    (d)editForcefile: This function is used to edit 'Force.pts', which can deliver forcing data to Nektar++
+    
+    (e)getCellTemperature: Get temperature of cells from tempearature of nodes
 
 3.Define_Nektar.py includes functions for operating Nektar++:
 
@@ -33,7 +37,9 @@ To do:
     
     (b)postProcess: It can post-process results of temperature and generate temperature function in fuel area and coefficients of this function.
     
-    (c)fuelTemperature: It can use temperature function to generate avarage temperature in cells.
+    (c)readNodesFromVtu: Read positions(x,y,z) from HeatPipeReactor_nodes.vtu.
+
+4.HeatPipeReactor_nodes.vtu is only used to store the information of nodes. HeatPipeReactor.xml is the setting for Nektar++.
 
 For more details, please check codes respectively.
 
