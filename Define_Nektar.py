@@ -7,10 +7,19 @@ import os
 
 # For simualting temperature field
 
+# def runSolver_Temp(solver_name,file_name,iteration):
+#     call('$NEK/'+solver_name+' '+file_name+'.xml', shell=True)
+#     if iteration > 0:
+#         file_name_new = file_name + '.bak'+str(iteration-1)
+#     else:
+#         file_name_new = file_name
+#     call('$NEK/FieldConvert '+file_name+'.xml '+file_name_new+'.fld '+file_name_new+'.vtu',shell=True)
+#     return file_name_new
+
 def runSolver_Temp(solver_name,file_name,iteration):
     call('$NEK/'+solver_name+' '+file_name+'.xml', shell=True)
     if iteration > 0:
-        file_name_new = file_name + '.bak'+str(iteration-1)
+        file_name_new = file_name 
     else:
         file_name_new = file_name
     call('$NEK/FieldConvert '+file_name+'.xml '+file_name_new+'.fld '+file_name_new+'.vtu',shell=True)
@@ -26,6 +35,10 @@ def editPipeBoundary(root,temp_pipe):
     return root
 
 def runNektar_Temp(file_name,solver_name,temp_pipe,iteration):
+    if os.path.exists(file_name+'.fld'):
+        os.remove(file_name+'.fld')
+    if os.path.exists(file_name+'.vtu'):
+        os.remove(file_name+'.vtu') 
     # Read mesh xml
     tree = ET.parse(file_name+'.xml')
     root = tree.getroot()
