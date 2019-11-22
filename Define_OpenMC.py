@@ -7,14 +7,18 @@ import time
 import sys
 
 def define_Geo_Mat_Set(cells_num_dic,parameters_dic,settings_dic,temp_phy_mat,controlRod_deep):
-    # Fuel U-10Mo
-    fuel = openmc.Material(name='U-10Mo')
-    fuel.set_density('g/cm3',16.8)
-    fuel.add_element('Mo',0.1,'wo')
-    # fuel.add_nuclide('U235',0.1773,'wo') # for LEU (19.7%)
-    # fuel.add_nuclide('U238',0.7227,'wo')
-    fuel.add_nuclide('U235',0.837,'wo') # for HEU (93.0%)
-    fuel.add_nuclide('U238',0.063,'wo')
+    # Check file
+    if os.path.exists('geometry.xml'):
+        os.remove('geometry.xml')
+    if os.path.exists('materials.xml'):
+        os.remove('materials.xml')
+    if os.path.exists('settings.xml'):
+        os.remove('settings.xml')
+    if os.path.exists('tallies.xml'):
+        os.remove('tallies.xml')
+
+    # defualt temperature: 1173.5K
+    temp_defualt = 1173.5
 
     # Structural Material HAYNES230
     structure_HAY = openmc.Material(name='HAYNES230')
@@ -53,7 +57,44 @@ def define_Geo_Mat_Set(cells_num_dic,parameters_dic,settings_dic,temp_phy_mat,co
     Coolant_Na.add_element('Na',1,'ao')
 
     # Instantiate a Materials collection
-    materials_file = openmc.Materials([fuel, structure_HAY, structure_SS, ControlRod_B4C, Reflector_BeO, Coolant_Na])
+    materials_file = openmc.Materials([structure_HAY, structure_SS, ControlRod_B4C, Reflector_BeO, Coolant_Na])
+
+
+    # Number of cells
+    n_r = cells_num_dic['n_r']
+    n_r_outer = cells_num_dic['n_r_outer']
+    n_h = cells_num_dic['n_h']
+    
+
+    # Effect of Temperature on density of fuel
+    fuel_list = []
+    density_mat = calUMoDensity(temp_phy_mat)
+
+    # Fuel U-10Mo
+    for j in range(n_h):
+        for i in range(n_r):
+            fuel_name = str((j+1)*10000+(i + 1)*100)
+            fuel = openmc.Material(name='U-10Mo '+ fuel_name)
+            fuel.set_density('g/cm3',density_mat[j,i])
+            fuel.add_element('Mo',0.1,'wo')
+            # fuel.add_nuclide('U235',0.1773,'wo') # for LEU (19.7%)
+            # fuel.add_nuclide('U238',0.7227,'wo')
+            fuel.add_nuclide('U235',0.837,'wo') # for HEU (93.0%)
+            fuel.add_nuclide('U238',0.063,'wo')
+            fuel_list.append(fuel)
+            materials_file.append(fuel)
+
+        for i in range(n_r_outer):
+            fuel_name = str((j+1)*10000+(i + n_r + 1)*100)
+            fuel = openmc.Material(name='U-10Mo '+ fuel_name)
+            fuel.set_density('g/cm3',density_mat[j,i+n_r])
+            fuel.add_element('Mo',0.1,'wo')
+            # fuel.add_nuclide('U235',0.1773,'wo') # for LEU (19.7%)
+            # fuel.add_nuclide('U238',0.7227,'wo')
+            fuel.add_nuclide('U235',0.837,'wo') # for HEU (93.0%)
+            fuel.add_nuclide('U238',0.063,'wo')
+            fuel_list.append(fuel)
+            materials_file.append(fuel)
 
     # Export to "materials.xml"
     materials_file.export_to_xml()
@@ -99,10 +140,6 @@ def define_Geo_Mat_Set(cells_num_dic,parameters_dic,settings_dic,temp_phy_mat,co
     n_ang = num_heat_pipe
     ang_mesh = np.pi/n_ang
 
-    # Number of cells
-    n_r = cells_num_dic['n_r']
-    n_r_outer = cells_num_dic['n_r_outer']
-    n_h = cells_num_dic['n_h']
 
     r_mesh = np.linspace(controlRod_r,(fuel_r-heat_pipe_R),n_r+1)
     r_outer_mesh = np.linspace(fuel_r-heat_pipe_R,fuel_r,n_r_outer+1)
@@ -145,6 +182,8 @@ def define_Geo_Mat_Set(cells_num_dic,parameters_dic,settings_dic,temp_phy_mat,co
     fuel_cell_list = []
     fuel_cell_ID_list = []
 
+
+    k = 0
     for j in range(n_h):
         cir_top = openmc.ZPlane(z0 = h_mesh[j+1])
         cir_bottom = openmc.ZPlane(z0 = h_mesh[j])
@@ -152,7 +191,8 @@ def define_Geo_Mat_Set(cells_num_dic,parameters_dic,settings_dic,temp_phy_mat,co
             cir_in = openmc.ZCylinder(r=r_mesh[i])
             cir_out = openmc.ZCylinder(r=r_mesh[i+1])
             fuel_cell = openmc.Cell()
-            fuel_cell.fill = fuel
+            fuel_cell.fill = fuel_list[k]
+            k = k+1
             fuel_cell.region = +cir_in & -cir_out & +cir_bottom &-cir_top
             fuel_cell.temperature = temp_phy_mat[j,i]
             fuel_cell.id = (j+1)*10000+(i + 1)*100
@@ -164,7 +204,8 @@ def define_Geo_Mat_Set(cells_num_dic,parameters_dic,settings_dic,temp_phy_mat,co
             cir_in = openmc.ZCylinder(r=r_outer_mesh[i])
             cir_out = openmc.ZCylinder(r=r_outer_mesh[i+1])
             fuel_cell = openmc.Cell()
-            fuel_cell.fill = fuel
+            fuel_cell.fill = fuel_list[k]
+            k = k+1
             fuel_cell.region = +cir_in & -cir_out & +heat_pipe_OD & +cir_bottom &-cir_top
             fuel_cell.temperature = temp_phy_mat[j,i+n_r]
             fuel_cell.id = (j+1)*10000+(n_r + i + 1)*100
@@ -185,30 +226,38 @@ def define_Geo_Mat_Set(cells_num_dic,parameters_dic,settings_dic,temp_phy_mat,co
         controlRod_cell = openmc.Cell(name='Control Rod')
         controlRod_cell.fill = ControlRod_B4C
         controlRod_cell.region = -controlRod_OD & +reflector_BOTTOM & -controlRod_TOP
+        controlRod_cell.tempearture = temp_defualt
         pin_cell_universe.add_cell(controlRod_cell)
 
     # Create heat pipe Cell
     heat_pipe_cell = openmc.Cell(name='Heat Pipe')
     heat_pipe_cell.fill = heat_pipe_universe
     heat_pipe_cell.region = -heat_pipe_OD & +reflector_BOTTOM & -reflector_TOP
+    heat_pipe_cell.temperature = temp_defualt
     heat_pipe_cell.translation = (fuel_r,0,0)
     pin_cell_universe.add_cell(heat_pipe_cell)
 
+    # To be edited
     # Create reflector Cell
     reflector_radial_cell = openmc.Cell(name='Radial Reflector')
     reflector_radial_cell.fill = Reflector_BeO
+    #
     reflector_radial_cell.region = +fuel_OD & +heat_pipe_OD & +reflector_BOTTOM & -reflector_TOP
+    #
+    reflector_radial_cell.temperature = temp_defualt
     pin_cell_universe.add_cell(reflector_radial_cell)
 
     reflector_bottom_cell = openmc.Cell(name='Bottom Reflector')
     reflector_bottom_cell.fill = Reflector_BeO
     reflector_bottom_cell.region = +controlRod_OD & +heat_pipe_OD & -fuel_OD  & -fuel_BOTTOM & +reflector_BOTTOM
+    reflector_bottom_cell.temperature = temp_defualt
     pin_cell_universe.add_cell(reflector_bottom_cell)
 
     reflector_top_cell = openmc.Cell(name='Top Reflector')
     reflector_top_cell.fill = Reflector_BeO
     reflector_top_cell.region = +heat_pipe_OD & -fuel_OD  & +controlRodSpace_TOP & -reflector_TOP
     reflector_top_cell.region = reflector_top_cell.region | (+controlRod_OD & +heat_pipe_OD & -fuel_OD & +fuel_TOP & -controlRodSpace_TOP)
+    reflector_top_cell.temperature = temp_defualt
     pin_cell_universe.add_cell(reflector_top_cell)
 
     # Create root Cell
@@ -233,6 +282,7 @@ def define_Geo_Mat_Set(cells_num_dic,parameters_dic,settings_dic,temp_phy_mat,co
     settings_file.batches = settings_dic['batches']
     settings_file.inactive = settings_dic['inactive']
     settings_file.particles = settings_dic['particles']
+    settings_file.temperature['multipole']= True
     settings_file.temperature['method']= 'interpolation'
 
     settings_file.source = openmc.Source(space=openmc.stats.Point((15,0,0)))
@@ -245,8 +295,9 @@ def define_Geo_Mat_Set(cells_num_dic,parameters_dic,settings_dic,temp_phy_mat,co
     for i in range(len(fuel_cell_ID_list)):
         tally = openmc.Tally(name='cell tally '+str(fuel_cell_ID_list[i]))
         tally.filters = [openmc.DistribcellFilter(fuel_cell_ID_list[i])]
-        tally.scores = ['heating']
+        tally.scores = ['heating','flux']
         tallies_file.append(tally)
+
 
     # Export to "tallies.xml"
     tallies_file.export_to_xml()
@@ -270,14 +321,23 @@ def postProcess(nodes_dic,volume_mat,temp_nodes_vec,fuel_nodes_index,parameters_
     col = np.size(volume_mat,1)
     # Get tally data
     heat_tot_vec = np.zeros(row*col)
+    heat_dev_vec = np.zeros(row*col)
+
+    flux_tot_vec = np.zeros(row*col)
+    flux_dev_vec = np.zeros(row*col)
 
     sp = openmc.StatePoint('statepoint.{}.h5'.format(batches))
-    k_vec = sp.k_generation[settings_dic['inactive']:]
-    k_ave = k_vec.sum()/len(k_vec)
+    k_eff = sp.k_combined
 
     for i in range(len(fuel_cell_ID_list)):
         t = sp.get_tally(name='cell tally '+str(fuel_cell_ID_list[i]))
         heat_tot_vec[i] = t.get_values(scores=['heating'],value='mean').item()
+        heat_dev_vec[i] = t.get_values(scores=['heating'],value='std_dev').item()
+        flux_tot_vec[i] = t.get_values(scores=['flux'],value='mean').item()
+        flux_dev_vec[i] = t.get_values(scores=['flux'],value='std_dev').item()
+    del sp
+
+    tally_dic = {'heat_mean':heat_tot_vec,'heat_dev':heat_dev_vec,'flux_mean':flux_tot_vec,'flux_dev':flux_dev_vec}
 
     heat_tot_mat = heat_tot_vec.reshape((row,col),order='C')
     # Define the power factor
@@ -338,15 +398,13 @@ def postProcess(nodes_dic,volume_mat,temp_nodes_vec,fuel_nodes_index,parameters_
     # Thermal conductivity. unit: W/(K.cm)
     heat_nodes_vec[fuel_nodes_index] = heat_fuel_nodes_vec
 
-    lamb = (0.606+0.0351*temp_nodes_vec)*0.01
+    lamb = calUMoThermalConduct(temp_nodes_vec)
     points_force = -heat_nodes_vec/lamb
 
-    start_time = time.time()
-    editForceFile(x,y,z,points_force,'Force')
-    end_time = time.time()
-    print(str(end_time-start_time))
+    editForceFile_Temp(x,y,z,points_force,'Force')
 
-    return k_ave
+
+    return k_eff, tally_dic
 
 
 def editCellTemperature(fuel_temp,fuel_cell_ID_list):
@@ -368,7 +426,7 @@ def editCellTemperature(fuel_temp,fuel_cell_ID_list):
             continue
     tree.write('geometry.xml')
 
-def editForceFile(x,y,z,points_force,file_name):
+def editForceFile_Temp(x,y,z,points_force,file_name):
     mat = np.zeros((len(x),4))
     mat[:,0] = x
     mat[:,1] = y
@@ -388,7 +446,7 @@ def editForceFile(x,y,z,points_force,file_name):
         root = tree.getroot()
         for points in root.findall('POINTS'):
             points.text = str_tot
-        tree.write(file_name+'.pts')
+        tree.write(file_name+'.pts',encoding="utf-8", xml_declaration=True)
     else:
         NEKTAR = ET.Element('NEKTAR')
         POINTS = ET.SubElement(NEKTAR,'POINTS',{'DIM':'3','FIELDS':'u'})
@@ -458,3 +516,18 @@ def getFuelNodesIndex(nodes_dic,parameters_dic):
     
     return fuel_nodes_index
 
+def calUMoThermalConduct(temp_nodes_vec):
+    # Temperature, unit: K
+    # lamb = (0.606+0.0351*Temp)*0.01
+    # Thermal conductivity. unit: W/(K.cm)
+
+    lamb = (0.606+0.0351*temp_nodes_vec)*0.01
+    return lamb
+
+def calUMoDensity(temp_phy_mat):
+    # Density, unit: g/cm3
+    # Temperature, unit: K
+    # density = 17.15-(8.63e-4+2.77e-5)*(temperature-273.5+20)
+    # Only for U-10Mo 
+    density_mat = 17.15-(8.63e-4+2.77e-5)*(temp_phy_mat-273.5+20)
+    return density_mat
