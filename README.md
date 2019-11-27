@@ -3,8 +3,8 @@
 
 This is simulation code for heat pipe reactor (KRUSTY 1/8 model).
 
-![photo](https://github.com/bearsan/Heat-Pipe-Reactor/cross_section.jpg)
-![photo](https://github.com/bearsan/Heat-Pipe-Reactor/coupling_method.jpg)
+![photo](https://github.com/bearsan/Heat-Pipe-Reactor/blob/master/coupling_method.jpg)
+![photo](https://github.com/bearsan/Heat-Pipe-Reactor/blob/master/cross_section.jpg)
 
 HeatPipeReactor.xml and HeatPipeReactor_node.vtu are files for the mesh with about 2000 elements.
 HeatPipeReactor_3.xml is the file for the mesh with about 8000 elements. Because the size of HeatPipeReactor_3_node.vtu is too big to upload, please contact with me if you want this file for test.
