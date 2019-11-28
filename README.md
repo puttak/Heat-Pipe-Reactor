@@ -82,6 +82,8 @@ Power distribution in fuel (Thermal power: 4 kW):
 
 # Contact Information:
 Wei Xiao
+
 School of Nuclear Science and Engineering, Shanghai Jiao Tong University
+
 E-mail: bearsanxw@gmail.com
 
