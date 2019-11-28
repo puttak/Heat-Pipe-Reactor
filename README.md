@@ -15,13 +15,13 @@ HeatPipeReactor_3.xml is the file for the mesh with about 8000 elements. Because
 
 Completed:
 
-    (a)Neutronics simulation 
-    (b)Temperature simulation in solid area
+    (a)Neutronics calculation 
+    (b)Temperature calculation in solid area
     (c)3D-Modeling
 
 To do:
 
-    (a)Fluid calculation in heat pipe
+    (a)Fluid simulation in heat pipe
     (b)Thermal expansion simulation
     (c)Burn-up calculation
 
