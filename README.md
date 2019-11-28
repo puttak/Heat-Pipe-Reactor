@@ -1,7 +1,7 @@
 # Heat-Pipe-Reactor
 # Instructions (version 0.0.3)
 
-This is simulation code for heat pipe reactor (KRUSTY 1/8 model).
+This is simulation code for heat pipe reactor (KRUSTY 1/8 model). (Developing and testing)
 
 Coupling Method:
 ![photo](https://github.com/bearsan/Heat-Pipe-Reactor/blob/master/coupling_method.jpg)
