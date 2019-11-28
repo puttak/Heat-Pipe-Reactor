@@ -17,8 +17,11 @@ def define_Geo_Mat_Set(cells_num_dic,parameters_dic,settings_dic,temp_phy_mat,co
     if os.path.exists('tallies.xml'):
         os.remove('tallies.xml')
 
-    # defualt temperature: 1173.5K
-    temp_defualt = 1073.5
+    # defualt temperature: 1073.5K
+    if settings_dic['temperature_update']== True:
+        temp_defualt = temp_phy_mat.min()
+    else:
+        temp_defualt = 1073.5
 
     # Structural Material HAYNES230
     structure_HAY = openmc.Material(name='HAYNES230')
@@ -228,14 +231,14 @@ def define_Geo_Mat_Set(cells_num_dic,parameters_dic,settings_dic,temp_phy_mat,co
         controlRod_cell = openmc.Cell(name='Control Rod')
         controlRod_cell.fill = ControlRod_B4C
         controlRod_cell.region = -controlRod_OD & +reflector_BOTTOM & -controlRod_TOP
-        controlRod_cell.tempearture = temp_phy_mat.min()
+        controlRod_cell.tempearture = temp_defualt
         pin_cell_universe.add_cell(controlRod_cell)
 
     # Create heat pipe Cell
     heat_pipe_cell = openmc.Cell(name='Heat Pipe')
     heat_pipe_cell.fill = heat_pipe_universe
     heat_pipe_cell.region = -heat_pipe_OD & +reflector_BOTTOM & -reflector_TOP
-    heat_pipe_cell.temperature = temp_phy_mat.min()
+    heat_pipe_cell.temperature = temp_defualt
     heat_pipe_cell.translation = (fuel_r,0,0)
     pin_cell_universe.add_cell(heat_pipe_cell)
 
@@ -250,27 +253,27 @@ def define_Geo_Mat_Set(cells_num_dic,parameters_dic,settings_dic,temp_phy_mat,co
         reflector_radial_cell = openmc.Cell(name='Radial Reflector')
         reflector_radial_cell.fill = Reflector_BeO
         reflector_radial_cell.region = +fuel_OD & +heat_pipe_OD & +reflector_empty_TOP & -reflector_TOP
-        reflector_radial_cell.temperature = temp_phy_mat.min()
+        reflector_radial_cell.temperature = temp_defualt
         pin_cell_universe.add_cell(reflector_radial_cell)
     else:
         reflector_radial_cell = openmc.Cell(name='Radial Reflector')
         reflector_radial_cell.fill = Reflector_BeO
         reflector_radial_cell.region = +fuel_OD & +heat_pipe_OD & +reflector_BOTTOM & -reflector_TOP
-        reflector_radial_cell.temperature = temp_phy_mat.min()
+        reflector_radial_cell.temperature = temp_defualt
         pin_cell_universe.add_cell(reflector_radial_cell)
 
 
     reflector_bottom_cell = openmc.Cell(name='Bottom Reflector')
     reflector_bottom_cell.fill = Reflector_BeO
     reflector_bottom_cell.region = +controlRod_OD & +heat_pipe_OD & -fuel_OD  & -fuel_BOTTOM & +reflector_BOTTOM
-    reflector_bottom_cell.temperature = temp_phy_mat.min()
+    reflector_bottom_cell.temperature = temp_defualt
     pin_cell_universe.add_cell(reflector_bottom_cell)
 
     reflector_top_cell = openmc.Cell(name='Top Reflector')
     reflector_top_cell.fill = Reflector_BeO
     reflector_top_cell.region = +heat_pipe_OD & -fuel_OD  & +controlRodSpace_TOP & -reflector_TOP
     reflector_top_cell.region = reflector_top_cell.region | (+controlRod_OD & +heat_pipe_OD & -fuel_OD & +fuel_TOP & -controlRodSpace_TOP)
-    reflector_top_cell.temperature = temp_phy_mat.min()
+    reflector_top_cell.temperature = temp_defualt
     pin_cell_universe.add_cell(reflector_top_cell)
 
     # Create root Cell
