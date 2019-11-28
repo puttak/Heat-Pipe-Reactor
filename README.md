@@ -13,6 +13,7 @@ HeatPipeReactor.xml and HeatPipeReactor_node.vtu are files for the mesh with abo
 HeatPipeReactor_3.xml is the file for the mesh with about 8000 elements. Because the size of HeatPipeReactor_3_node.vtu is too big to upload, please contact with me if you want this file for test.
 
 
+
 Completed:
 
     (a)Neutronics calculation 
@@ -78,4 +79,9 @@ Power distribution in fuel (Thermal power: 4 kW):
 [6] Paul K. Romano and Benoit Forget, “The OpenMC Monte Carlo Particle Transport Code,” Ann. Nucl. Energy, 51, 274–281 (2013).
 
 [7] C.Cantwell, D.Moxey, A.Comerford, A.Bolis, G.Rocco, G.Mengaldo, D.DeGrazia, S.Yakovlev, J.E.Lombard, D.Ekelschot, B.Jordi, H.Xu, Y.Mohamied, C.Eskilsson, B.Nelson,P.Vos, C.Biotto, R.Kirby, S.Sherwin, Nektar++:an open source spectral/hp element framework, Comput.Phys.Commun, 192, 205–219 (2015).
+
+# Contact Information:
+Wei Xiao
+School of Nuclear Science and Engineering, Shanghai Jiao Tong University
+E-mail: bearsanxw@gmail.com
 
