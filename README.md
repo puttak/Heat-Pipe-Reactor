@@ -33,7 +33,7 @@ To do:
 
     (a)define_Geo_Mat_Set: This function is used to generate  geometry.xml, material.xml and settings.xml.
     
-    (b)postProcess_Temp: This function is used to post-proccess heating source distribution and generate forcing function for Nektar++.
+    (b)postProcess: This function is used to post-proccess heating source distribution and generate forcing function for Nektar++.
     
     (c)editCellTemperature: This function is used to edit temperature of cells in geometry.xml.
     
@@ -41,11 +41,11 @@ To do:
     
     (e)getCellTemperature: Get temperature of cells from tempearature of nodes
 
-3.Define_Nektar.py includes functions for operating Nektar++:
+3.Define_Nektar.py includes functions for operating Nektar++ (Currently only includes codes for temperature simulation):
 
-    (a)runNektar: Just as its name. Of cause, It can generate .fld and convert it to .vtu that we need.
+    (a)runNektar_Temp: Just as its name. Of cause, It can generate .fld and convert it to .vtu that we need.
     
-    (b)postProcess: It can post-process results of temperature and generate temperature function in fuel area and coefficients of this function.
+    (b)postProcess_Temp: It can post-process results of temperature and generate temperature function in fuel area and coefficients of this function.
     
     (c)readNodesFromVtu: Read positions(x,y,z) of nodes from HeatPipeReactor_nodes.vtu.
 
