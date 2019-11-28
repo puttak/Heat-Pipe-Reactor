@@ -9,8 +9,7 @@ Coupling Method:
 Cross section of KRUSTY:
 ![photo](https://github.com/bearsan/Heat-Pipe-Reactor/blob/master/cross_section.jpg)
 
-HeatPipeReactor.xml and HeatPipeReactor_node.vtu are files for the mesh with about 2000 elements.
-HeatPipeReactor_3.xml is the file for the mesh with about 8000 elements. Because the size of HeatPipeReactor_3_node.vtu is too big to upload, please contact with me if you want this file for test.
+HeatPipeReactor_3.xml and HeatPipeReactor_3_node.vtu are files for the mesh with about 8000 elements. Because the size of HeatPipeReactor_3_node.vtu is too big to upload, please contact with me if you want this file for test.
 
 
 
@@ -34,11 +33,11 @@ To do:
 
     (a)define_Geo_Mat_Set: This function is used to generate  geometry.xml, material.xml and settings.xml.
     
-    (b)postProcess: This function is used to post-proccess heating source distribution and generate forcing function for Nektar++.
+    (b)postProcess_Temp: This function is used to post-proccess heating source distribution and generate forcing function for Nektar++.
     
     (c)editCellTemperature: This function is used to edit temperature of cells in geometry.xml.
     
-    (d)editForcefile: This function is used to edit 'Force.pts', which can deliver forcing data to Nektar++
+    (d)editForcefile_Temp: This function is used to edit 'Force.pts', which can deliver forcing data to Nektar++
     
     (e)getCellTemperature: Get temperature of cells from tempearature of nodes
 
