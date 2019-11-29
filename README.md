@@ -56,6 +56,12 @@ For more details, please check codes respectively.
 You can get the parameters of KRUSTY and thermal properties of fuel from the following reference papers. 
 
 # Current Results:
+Temperature distribution:
+
+![photo](https://github.com/bearsan/Heat-Pipe-Reactor/blob/master/Image/temperature_1.jpg)
+
+![photo](https://github.com/bearsan/Heat-Pipe-Reactor/blob/master/Image/temperature_2.jpg)
+
 Flux density distribution in fuel:
 
 ![photo](https://github.com/bearsan/Heat-Pipe-Reactor/blob/master/Image/flux_distribution.png)
