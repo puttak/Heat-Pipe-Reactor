@@ -56,6 +56,8 @@ For more details, please check codes respectively.
 You can get the parameters of KRUSTY and thermal properties of fuel from the following reference papers. 
 
 # Current Results:
+Xiao, W., et al.(2019). Multi-physics Coupled Simulation of Heat Pipe Reactor with OpenMC and Nektar++. 12th XJTU-UT-SJTU Joint International Symposium on Nuclear Science and Technology.
+
 Temperature distribution:
 
 ![photo](https://github.com/bearsan/Heat-Pipe-Reactor/blob/master/Image/temperature_1.jpg)
